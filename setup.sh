@@ -1,3 +1,4 @@
+echo "hello world" > ~/hello.txt
 sudo apt-get update
 sudo apt-get install tmux -y
 npm i -g pnpm

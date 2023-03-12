@@ -26,9 +26,9 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && add-apt-repository universe \
     && rm -rf /var/lib/apt/lists/*
-RUN export NVM_DIR="$HOME/.nvm"
-RUN echo "nvm dir is $NVM_DIR"
 RUN curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash \
+    && export NVM_DIR="$HOME/.nvm" \
+    && echo "nvm dir is $NVM_DIR" \
     && $NVM_DIR/nvm.sh install --lts \
     && $NVM_DIR/nvm.sh use --lts
 RUN npm i -g pnpm

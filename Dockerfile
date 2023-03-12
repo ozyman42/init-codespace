@@ -31,6 +31,7 @@ RUN apt-get update \
     && add-apt-repository universe \
     && add-apt-repository multiverse \
     && apt-get install -y vim
+RUN useradd -rm -d /home/codespace -s /bin/bash -g root -G sudo -u 1001 codespace
 USER codespace
 RUN npm i -g pnpm
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y

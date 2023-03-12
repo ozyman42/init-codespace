@@ -21,13 +21,15 @@ RUN apt-get update \
         nodejs \
         npm \
         software-properties-common \
+        git \
         # My stuff
     && rm -rf /var/lib/apt/lists/* \
     # This is the folder containing 'links' to benv and build script generator
     && apt-get update \
     && apt-get upgrade -y \
     && add-apt-repository universe \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get install -y vim
 RUN npm i -g pnpm
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 RUN git config --global core.editor vim

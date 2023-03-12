@@ -28,7 +28,9 @@ RUN apt-get update \
     && add-apt-repository restricted \
     && add-apt-repository universe \
     && add-apt-repository multiverse
-RUN useradd -rm -d /home/codespace -s /bin/bash -g root -G sudo -u 1001 codespace
+RUN useradd -rm -d /home/codespace -s /bin/bash \
+    -p "$(openssl passwd -1 ubuntu)" \
+    -g root -G sudo -u 1001 codespace
 USER codespace
 RUN sudo apt-get install -y \
     tmux \

@@ -26,12 +26,11 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && add-apt-repository universe \
     && rm -rf /var/lib/apt/lists/*
-RUN echo "home is $HOME"
 RUN export NVM_DIR="$HOME/.nvm"
+RUN echo "nvm dir is $NVM_DIR"
 RUN curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash \
-    && . $NVM_DIR/nvm.sh \
-    && nvm install --lts \
-    && nvm use --lts
+    && $NVM_DIR/nvm.sh install --lts \
+    && $NVM_DIR/nvm.sh use --lts
 RUN npm i -g pnpm
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 RUN git config --global core.editor vim

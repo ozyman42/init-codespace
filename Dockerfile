@@ -18,6 +18,7 @@ RUN apt-get update \
         wget \
         curl \
         tmux \
+        software-properties-common \
         # My stuff
     && rm -rf /var/lib/apt/lists/* \
     # This is the folder containing 'links' to benv and build script generator

@@ -19,6 +19,7 @@ RUN apt-get update \
         curl \
         software-properties-common \
         git \
+        sudo \
         # My stuff
     # This is the folder containing 'links' to benv and build script generator
     && apt-get update \

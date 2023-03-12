@@ -28,6 +28,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash 
+RUN nvm install --lts && nvm use --lts
 RUN npm i -g pnpm
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
@@ -49,6 +50,8 @@ RUN mkdir -p ~/.android/cmdline-tools/latest
 RUN mv cmdline-tools/* ~/.android/cmdline-tools/latest
 RUN rm -d cmdline-tools
 RUN rm cmdline-tools.zip
+RUN CUR_DIR=$(pwd)
+RUN echo "CURRENT DIRECTORY IS $CUR_DIR"
 RUN export ANDROID_HOME="$HOME/.android"
 RUN export NDK_HOME="$ANDROID_HOME/ndk/25.0.8775105"
 RUN export PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest/bin/"

@@ -31,15 +31,15 @@ RUN apt-get update \
     && add-apt-repository multiverse
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
 ENV NVM_DIR=/root/.nvm
-RUN . "$NVM_DIR/nvm.sh" && nvm install --lts
-RUN . "$NVM_DIR/nvm.sh" && nvm use --lts
-RUN ls -la /root/.nvm/versions/node/
+ENV NODE_VERSION=v18.15.0
+RUN . "$NVM_DIR/nvm.sh" && nvm install $NODE_VERSION
+RUN . "$NVM_DIR/nvm.sh" && nvm use $NODE_VERSION
 ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 RUN node --version
 RUN npm --version
 RUN npm i -g pnpm
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-RUN git config --global core.editor vim
+ENV PATH="/root/.cargo/bin:${PATH}"
 # https://next--tauri.netlify.app/next/guides/getting-started/prerequisites/linux
 RUN DEBIAN_FRONTEND=noninteractive apt install -y \
     libwebkit2gtk-4.0-dev \
@@ -50,7 +50,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt install -y \
     librsvg2-dev
 RUN rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
 # Standalone install
-RUN DEBIAN_FRONTEND=noninteractive sudo apt install -y default-jdk
+RUN DEBIAN_FRONTEND=noninteractive apt install -y default-jdk
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 RUN wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O cmdline-tools.zip
 RUN unzip cmdline-tools.zip

@@ -20,6 +20,7 @@ RUN apt-get update \
         software-properties-common \
         git \
         sudo \
+        tmux \
         # My stuff
     # This is the folder containing 'links' to benv and build script generator
     && apt-get update \
@@ -28,19 +29,19 @@ RUN apt-get update \
     && add-apt-repository restricted \
     && add-apt-repository universe \
     && add-apt-repository multiverse
-RUN useradd -rm -d /home/codespace -s /bin/bash \
-    -p "$(openssl passwd -1 ubuntu)" \
-    -g root -G sudo -u 1001 codespace
-USER codespace
-RUN DEBIAN_FRONTEND=noninteractive sudo apt-get install -y \
-    tmux \
-    nodejs \
-    npm
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+ENV NVM_DIR=/root/.nvm
+RUN . "$NVM_DIR/nvm.sh" && nvm install --lts
+RUN . "$NVM_DIR/nvm.sh" && nvm use --lts
+RUN ls -la /root/.nvm/versions/node/
+ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
+RUN node --version
+RUN npm --version
 RUN npm i -g pnpm
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 RUN git config --global core.editor vim
 # https://next--tauri.netlify.app/next/guides/getting-started/prerequisites/linux
-RUN DEBIAN_FRONTEND=noninteractive sudo apt install -y \
+RUN DEBIAN_FRONTEND=noninteractive apt install -y \
     libwebkit2gtk-4.0-dev \
     build-essential \
     libssl-dev \

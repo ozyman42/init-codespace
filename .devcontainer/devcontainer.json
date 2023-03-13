@@ -1,5 +1,8 @@
 {
-    "image": "docker.io/alexleung/codespaces-devcontainer",
+    "build": {
+        "context": ".",
+        "dockerfile": "./Dockerfile"
+    },
     "features": {
         "desktop-lite": {
             "password": "vscode",

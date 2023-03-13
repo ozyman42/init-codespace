@@ -32,7 +32,7 @@ RUN useradd -rm -d /home/codespace -s /bin/bash \
     -p "$(openssl passwd -1 ubuntu)" \
     -g root -G sudo -u 1001 codespace
 USER codespace
-RUN sudo apt-get install -y \
+RUN DEBIAN_FRONTEND=noninteractive sudo apt-get install -y \
     tmux \
     nodejs \
     npm
@@ -40,7 +40,7 @@ RUN npm i -g pnpm
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 RUN git config --global core.editor vim
 # https://next--tauri.netlify.app/next/guides/getting-started/prerequisites/linux
-RUN sudo apt install -y \
+RUN DEBIAN_FRONTEND=noninteractive sudo apt install -y \
     libwebkit2gtk-4.0-dev \
     build-essential \
     libssl-dev \
@@ -49,7 +49,7 @@ RUN sudo apt install -y \
     librsvg2-dev
 RUN rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
 # Standalone install
-RUN sudo apt install -y default-jdk
+RUN DEBIAN_FRONTEND=noninteractive sudo apt install -y default-jdk
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 RUN wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O cmdline-tools.zip
 RUN unzip cmdline-tools.zip

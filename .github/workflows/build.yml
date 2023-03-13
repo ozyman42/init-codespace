@@ -1,8 +1,8 @@
 name: Build & Push Docker Image 
 on:
   push:
-    branches:
-      - main
+    paths:
+      - Dockerfile
 jobs:
   build_and_push:
     name: Push Docker image to Docker Hub

@@ -1,5 +1,5 @@
 {
-    "image": "hub.docker.com/alexleung/codespaces-devcontainer",
+    "image": "docker.io/alexleung/codespaces-devcontainer",
     "features": {
         "desktop-lite": {
             "password": "vscode",

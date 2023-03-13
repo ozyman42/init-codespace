@@ -58,10 +58,10 @@ RUN mkdir -p ~/.android/cmdline-tools/latest
 RUN mv cmdline-tools/* ~/.android/cmdline-tools/latest
 RUN rm -d cmdline-tools
 RUN rm cmdline-tools.zip
-RUN CUR_DIR=$(pwd) && echo "CURRENT DIRECTORY IS $CUR_DIR"
 ENV ANDROID_HOME="$HOME/.android"
 ENV NDK_HOME="$ANDROID_HOME/ndk/25.0.8775105"
-ENV PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest/bin/"
+ENV PATH="$ANDROID_HOME/cmdline-tools/latest/bin/:${PATH}"
+RUN ls $ANDROID_HOME/cmdline-tools/latest/bin/
 RUN yes | sdkmanager --licenses
 RUN sdkmanager "platforms;android-33" "platform-tools" "ndk;25.0.8775105" "build-tools;33.0.0"
 # Cleanup

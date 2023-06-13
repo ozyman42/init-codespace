@@ -43,8 +43,6 @@ ENV PATH="${USER_HOME}/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 RUN node --version
 RUN npm --version
 RUN npm i -g pnpm
-RUN pnpm setup
-RUN source ~/.bashrc
 
 # ========
 # RUST
@@ -92,7 +90,7 @@ RUN rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-a
 # ============
 # NATIVESCRIPT
 # ============
-RUN pnpm add -g nativescript
+RUN npm install -g nativescript
 RUN ns doctor android
 
 # ========

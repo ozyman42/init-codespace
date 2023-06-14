@@ -53,8 +53,9 @@ ENV PATH="${USER_HOME}/.cargo/bin:${PATH}"
 # ========
 # JAVA
 # ========
-RUN DEBIAN_FRONTEND=noninteractive apt install -y openjdk-14-jdk
-ENV JAVA_HOME=/usr/lib/jvm/java-14-openjdk-amd64
+RUN DEBIAN_FRONTEND=noninteractive apt install -y openjdk-17-jdk
+RUN ls -la /usr/lib/jvm
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 
 # ========
 # ANDROID

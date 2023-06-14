@@ -18,7 +18,7 @@ RUN apt-get update && apt-get upgrade -y \
     git \
     sudo \
     tmux \
-    ssh-keygen
+    openssh-server
 
 # ========
 # NODE

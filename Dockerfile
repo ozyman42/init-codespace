@@ -17,7 +17,8 @@ RUN apt-get update && apt-get upgrade -y \
     software-properties-common \
     git \
     sudo \
-    tmux
+    tmux \
+    ssh-keygen
 
 # ========
 # NODE

@@ -58,6 +58,7 @@ RUN mv cmdline-tools ./.android/cmdline-tools/latest
 ENV PATH="${PATH}:${USER_HOME}/.android/cmdline-tools/latest/bin"
 RUN yes | sdkmanager --licenses
 RUN sdkmanager "platforms;android-33" "platform-tools" "build-tools;33.0.0" "emulator" "ndk;25.2.9519653"
+ENV PATH="${PATH}:${USER_HOME}/.android/platform-tools"
 # We can't use the x86_64 version as this requires hardware acceleration which codespaces doesn't support so I tried ARM
 # However ARM doesn't work either, so instead we're trying mesh VPN, see:
 # - https://www.reddit.com/r/androiddev/comments/11fzzjk/how_android_devs_can_use_github_codespaces/

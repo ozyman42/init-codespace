@@ -69,8 +69,8 @@ ENV ANDROID_HOME="${USER_HOME}/.android"
 # Method 2 (via command line tools)
 # https://developer.android.com/tools/sdkmanager
 RUN DEBIAN_FRONTEND=noninteractive apt install -y android-sdk
-ENV PATH="${PATH}:/usr/lib/android-sdk"
-RUN ls -la /usr/lib/android-sdk
+ENV PATH="${PATH}:/usr/lib/android-sdk/tools/bin"
+RUN ls -la /usr/lib/android-sdk/tools/bin
 RUN yes | sdkmanager --licenses
 RUN sdkmanager "platforms;android-33" "platform-tools" "build-tools;34.0.0" "cmdline-tools;latest" "emulator" "ndk;25.2.9519653"
 

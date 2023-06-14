@@ -40,8 +40,6 @@ ENV NODE_VERSION=20.3.0
 RUN . "$NVM_DIR/nvm.sh" && nvm install $NODE_VERSION
 RUN . "$NVM_DIR/nvm.sh" && nvm use v$NODE_VERSION
 ENV PATH="${USER_HOME}/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
-RUN node --version
-RUN npm --version
 RUN npm i -g pnpm
 
 # ========
@@ -55,8 +53,6 @@ ENV PATH="${USER_HOME}/.cargo/bin:${PATH}"
 # ========
 RUN DEBIAN_FRONTEND=noninteractive apt install -y openjdk-17-jdk
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-RUN javac -version
-RUN java -version
 
 # ========
 # ANDROID
@@ -74,10 +70,10 @@ ENV ANDROID_HOME="${USER_HOME}/.android"
 # https://developer.android.com/tools/sdkmanager
 RUN DEBIAN_FRONTEND=noninteractive apt install -y android-sdk
 ENV PATH="${PATH}:/usr/lib/android-sdk"
-RUN yes | sdkmanager --licenses
-RUN sdkmanager "platforms;android-33" "platform-tools" "build-tools;34.0.0" "cmdline-tools;latest" "emulator" "ndk;25.2.9519653"
 RUN ls -la /usr/lib
 RUN ls -la ~/
+RUN yes | sdkmanager --licenses
+RUN sdkmanager "platforms;android-33" "platform-tools" "build-tools;34.0.0" "cmdline-tools;latest" "emulator" "ndk;25.2.9519653"
 
 # ========
 # TAURI

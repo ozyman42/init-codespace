@@ -1,35 +1,23 @@
 FROM ubuntu:focal
 ENV USER_HOME=/root
-RUN apt-get update \
-  && apt-get upgrade -y \
+RUN apt-get update && apt-get upgrade -y \
   && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     make \
     unzip \
-    # The tools in this package are used when installing packages for Python
     build-essential \
     swig3.0 \
-    # Required for ts
     moreutils \
     rsync \
     zip \
     libgdiplus \
     jq \
-    # Others
     sqlite3 \
     wget \
     curl \
     software-properties-common \
     git \
     sudo \
-    tmux \
-    # My stuff
-  # This is the folder containing 'links' to benv and build script generator
-  && apt-get update \
-  && apt-get upgrade -y \
-  && add-apt-repository main \
-  && add-apt-repository restricted \
-  && add-apt-repository universe \
-  && add-apt-repository multiverse
+    tmux
 
 # ========
 # NODE
@@ -57,22 +45,20 @@ ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 # ========
 # ANDROID
 # ========
+# https://developer.android.com/tools
+# https://developer.android.com/studio#command-line-tools-only
+RUN pwd
+WORKDIR $USER_HOME
 ENV ANDROID_HOME="${USER_HOME}/.android"
-
-# Method 1 (via IDE)
-# https://adamtheautomator.com/android-studio/
-# https://www.youtube.com/watch?v=nqQkxKiOht4
-# RUN add-apt-repository ppa:maarten-fonville/android-studio
-# RUN apt-get update
-# RUN DEBIAN_FRONTEND=noninteractive apt install -y android-studio
-
-# Method 2 (via command line tools)
-# https://developer.android.com/tools/sdkmanager
-RUN DEBIAN_FRONTEND=noninteractive apt install -y android-sdk
-ENV PATH="${PATH}:/usr/lib/android-sdk/tools/bin"
-RUN ls -la /usr/lib/android-sdk/tools/bin
+ENV ANDROID_ZIP_NAME="commandlinetools-linux-9477386_latest.zip"
+RUN wget "https://dl.google.com/android/repository/$ANDROID_ZIP_NAME"
+RUN unzip $ANDROID_ZIP_NAME
+RUN rm $ANDROID_ZIP_NAME
+RUN mkdir -p .android/cmdline-tools
+RUN mv cmdline-tools ./.android/cmdline-tools/latest
+ENV PATH="${PATH}:${USER_HOME}/.android/cmdline-tools/latest/bin"
 RUN yes | sdkmanager --licenses
-RUN sdkmanager "platforms;android-33" "platform-tools" "build-tools;34.0.0" "cmdline-tools;latest" "emulator" "ndk;25.2.9519653"
+RUN sdkmanager "platforms;android-33" "platform-tools" "build-tools;33.0.0" "emulator" "ndk;25.2.9519653"
 
 # ========
 # TAURI
@@ -90,7 +76,7 @@ RUN rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-a
 # ============
 # NATIVESCRIPT
 # ============
-RUN npm install -g nativescript
+RUN npm install -g nativescript@8.5.3
 RUN ns doctor android
 
 # ========

@@ -20,6 +20,14 @@ RUN apt-get update && apt-get upgrade -y \
     tmux \
     openssh-server
 
+# =========
+# TERRAFORM
+# =========
+RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+RUN sudo apt-add-repository "deb [arch=$(dpkg --print-architecture)] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+RUN sudo apt update
+RUN sudo apt install terraform
+
 # ========
 # NODE
 # ========
@@ -64,10 +72,6 @@ ENV PATH="${PATH}:${USER_HOME}/.android/platform-tools"
 # However ARM doesn't work either, so instead we're trying mesh VPN, see:
 # - https://www.reddit.com/r/androiddev/comments/11fzzjk/how_android_devs_can_use_github_codespaces/
 # - https://tailscale.com/kb/1160/github-codespaces/
-# ENV ANDROID_IMAGE="system-images;android-33;google_apis;arm64-v8a"
-# RUN sdkmanager "${ANDROID_IMAGE}"
-# RUN avdmanager create avd -n test -k "${ANDROID_IMAGE}" <<< "\n"
-# RUN avdmanager list avd
 
 # ========
 # TAURI
@@ -87,6 +91,11 @@ RUN rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-a
 # ============
 RUN npm install -g nativescript@8.5.3
 RUN ns doctor android
+
+# ==========
+# CAPACITOR
+# ==========
+RUN npm install -g @capacitor/cli
 
 # ========
 # CLEANUP

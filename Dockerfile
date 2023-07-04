@@ -21,8 +21,21 @@ RUN apt-get update && apt-get upgrade -y \
     openssh-server
 
 # =========
+# GCLOUD
+# =========
+# https://cloud.google.com/sdk/docs/install-sdk#deb
+RUN DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends \
+  apt-transport-https \
+  ca-certificates \
+  gnupg
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+RUN sudo apt-get update && sudo apt-get install google-cloud-cli
+
+# =========
 # TERRAFORM
 # =========
+RUN sudo apt install gpg-agent
 RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
 RUN sudo apt-add-repository "deb [arch=$(dpkg --print-architecture)] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
 RUN sudo apt update

@@ -20,7 +20,8 @@ RUN apt-get update && apt-get upgrade -y \
     tmux \
     openssh-server \
     ca-certificates \
-    gnupg
+    gnupg \
+    apt-transport-https
 
 # =========
 # DOCKER

@@ -18,16 +18,40 @@ RUN apt-get update && apt-get upgrade -y \
     git \
     sudo \
     tmux \
-    openssh-server
+    openssh-server \
+    ca-certificates \
+    gnupg
+
+# =========
+# DOCKER
+# =========
+# https://docs.docker.com/engine/install/ubuntu/
+RUN sudo install -m 0755 -d /etc/apt/keyrings
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+RUN sudo chmod a+r /etc/apt/keyrings/docker.gpg
+RUN echo \
+  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+RUN sudo apt-get update
+RUN sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# ========== 
+# KUBERNETES
+# ==========
+# https://kind.sigs.k8s.io/docs/user/quick-start#installation
+RUN [ $(uname -m) = x86_64 ] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64
+RUN chmod +x ./kind
+RUN sudo mv ./kind /usr/local/bin/kind
+# https://www.cherryservers.com/blog/install-kubectl-ubuntu
+RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+RUN chmod +x ./kubectl
+RUN sudo mv ./kubectl /usr/local/bin/kubectl
 
 # =========
 # GCLOUD
 # =========
 # https://cloud.google.com/sdk/docs/install-sdk#deb
-RUN DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends \
-  apt-transport-https \
-  ca-certificates \
-  gnupg
 RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
 RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
 RUN sudo apt-get update && sudo apt-get install google-cloud-cli

@@ -8,7 +8,8 @@
             "password": "vscode",
             "webPort": "6080",
             "vncPort": "5901"
-        }
+        },
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
     },
     "customizations": {
         "vscode": {

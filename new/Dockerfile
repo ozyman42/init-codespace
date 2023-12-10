@@ -1,9 +1,10 @@
 FROM alpine/git:2.40.1 AS git_binary
 FROM linuxserver/openssh-server:amd64-version-9.3_p2-r0 AS openssh_server_binary
 FROM keinos/sqlite3:3.42.0 AS sqlite_binary
-FROM rancher/k3d:5.3.0-dind-linux-amd64 AS kubernetes_binary
+# FROM rancher/k3d:5.3.0-dind-linux-amd64 AS kubernetes_binary
 FROM google/cloud-sdk:444.0.0-alpine AS gcloud_binary
 FROM hashicorp/terraform:1.5.5 as terraform_binary
+FROM alvrme/alpine-android:android-33-jdk17-v2023.09.10 as android_binary
 FROM node:alpine3.18 as node_binary
 RUN corepack prepare pnpm@8.7.1 --activate
 RUN corepack enable
@@ -30,7 +31,9 @@ FROM rust:alpine3.18 as rust_binary
 FROM alpine:3.18 as alpine_installer
 RUN apk add \
     sudo \
-    bash
+    zsh \
+    curl \
+    tmux
 FROM alpine:3.18
 COPY startup.sh /tmp/startup.sh
 RUN chmod +x /tmp/startup.sh
@@ -41,11 +44,32 @@ COPY --from=alpine_installer /lib/ld-musl-x86_64.so.1 /lib/ld-musl-x86_64.so.1
 COPY --from=alpine_installer /usr/lib/sudo/libsudo_util.so.0 /usr/lib/sudo/libsudo_util.so.0
 COPY --from=alpine_installer /usr/lib/sudo/sudoers.so /usr/lib/sudo/sudoers.so
 
-# Install bash
-COPY --from=alpine_installer /bin/bash /bin/bash
+# Install curl
+COPY --from=alpine_installer /usr/bin/curl /usr/bin/curl
+COPY --from=alpine_installer /usr/lib/libcurl.so.4 /usr/lib/libcurl.so.4
+COPY --from=alpine_installer /lib/libz.so.1 /lib/libz.so.1
 # COPY --from=alpine_installer /lib/ld-musl-x86_64.so.1 /lib/ld-musl-x86_64.so.1
-COPY --from=alpine_installer /usr/lib/libreadline.so.8 /usr/lib/libreadline.so.8
+COPY --from=alpine_installer /usr/lib/libnghttp2.so.14 /usr/lib/libnghttp2.so.14
+COPY --from=alpine_installer /usr/lib/libidn2.so.0 /usr/lib/libidn2.so.0
+COPY --from=alpine_installer /lib/libssl.so.3 /lib/libssl.so.3
+COPY --from=alpine_installer /lib/libcrypto.so.3 /lib/libcrypto.so.3
+COPY --from=alpine_installer /usr/lib/libbrotlidec.so.1 /usr/lib/libbrotlidec.so.1
+COPY --from=alpine_installer /usr/lib/libunistring.so.5 /usr/lib/libunistring.so.5
+COPY --from=alpine_installer /usr/lib/libbrotlicommon.so.1 /usr/lib/libbrotlicommon.so.1
+
+# Install tmux
+COPY --from=alpine_installer /usr/bin/tmux /usr/bin/tmux
 COPY --from=alpine_installer /usr/lib/libncursesw.so.6 /usr/lib/libncursesw.so.6
+COPY --from=alpine_installer /usr/lib/libevent_core-2.1.so.7 /usr/lib/libevent_core-2.1.so.7
+# COPY --from=alpine_installer /lib/ld-musl-x86_64.so.1 /lib/ld-musl-x86_64.so.1
+COPY --from=alpine_installer /etc/terminfo /etc/terminfo
+
+# Install zsh
+COPY --from=alpine_installer /bin/zsh /bin/zsh
+# COPY --from=alpine_installer /lib/ld-musl-x86_64.so.1 /lib/ld-musl-x86_64.so.1
+COPY --from=alpine_installer /usr/lib/libcap.so.2 /usr/lib/libcap.so.2
+# COPY --from=alpine_installer /usr/lib/libncursesw.so.6 /usr/lib/libncursesw.so.6
+COPY --from=alpine_installer /usr/lib/zsh /usr/lib/zsh
 
 # Install git
 COPY --from=git_binary /usr/bin/git /usr/bin/git
@@ -59,7 +83,7 @@ COPY --from=openssh_server_binary /usr/bin/ssh-keygen /usr/bin/ssh-keygen
 COPY --from=openssh_server_binary /usr/bin/ssh /usr/bin/ssh
 # COPY --from=openssh_server_binary /lib/ld-musl-x86_64.so.1 /lib/ld-musl-x86_64.so.1
 # COPY --from=openssh_server_binary /lib/libz.so.1 /lib/libz.so.1
-COPY --from=openssh_server_binary /lib/libcrypto.so.3 /lib/libcrypto.so.3
+# COPY --from=openssh_server_binary /lib/libcrypto.so.3 /lib/libcrypto.so.3
 COPY --from=openssh_server_binary /lib/libpam.so.0 /lib/libpam.so.0
 COPY --from=openssh_server_binary /etc/ssh/sshd_config /etc/ssh/sshd_config
 # RUN adduser -D -s /bin/false sshd
@@ -76,8 +100,9 @@ COPY --from=sqlite_binary /usr/bin/sqlite3 /usr/bin/sqlite3
 # https://www.youtube.com/watch?v=gVDIAU2TuZs
 
 # Install Kubernetes (k3d)
-COPY --from=kubernetes_binary /usr/local/bin/kubectl /usr/local/bin/kubectl
-COPY --from=kubernetes_binary /bin/k3d /bin/k3d
+# Decided not to do k3d since I'll be using mirrorD/telepresence instead
+# COPY --from=kubernetes_binary /usr/local/bin/kubectl /usr/local/bin/kubectl
+# COPY --from=kubernetes_binary /bin/k3d /bin/k3d
 
 # Install GCloud
 COPY --from=gcloud_binary /google-cloud-sdk/bin/gcloud /bin/gcloud
@@ -99,14 +124,23 @@ COPY --from=cdktf_binary /usr/local/bin/cdktf /usr/local/bin/cdktf
 COPY --from=cdktf_binary /usr/local/bin/global /usr/local/bin/global
 
 # Install Rust
-COPY --from=rust_binary /usr/local/cargo/bin /usr/local/cargo/bin
+COPY --from=rust_binary /usr/local/cargo /usr/local/cargo
+COPY --from=rust_binary /usr/local/rustup /usr/local/rustup
 ENV PATH $PATH:/usr/local/cargo/bin
+ENV CARGO_HOME /usr/local/cargo
+ENV RUSTUP_HOME /usr/local/rustup
 
-# Install Java
-
-
-# Install Android
-
+# Install Java and Android
+COPY --from=android_binary /usr/lib/jvm /usr/lib/jvm
+COPY --from=android_binary /opt/sdk /opt/sdk
+ENV JAVA_HOME /usr/lib/jvm/jdk-17.0.8.1-bellsoft-x86_64
+ENV PATH $PATH:$JAVA_HOME/bin
+ENV ANDROID_HOME /opt/sdk
+ENV ANDROID_SDK_ROOT /opt/sdk
+ENV PATH $PATH:$ANDROID_HOME/cmdline-tools/11.0/bin
+ENV PATH $PATH:$ANDROID_HOME/platform-tools
+ENV PATH $PATH:$ANDROID_HOME/extras/google/instantapps
+ENV PATH $PATH:$ANDROID_HOME/build-tools/33.0.2
 
 # Install Tauri
 # TODO: waiting for ecosystem to mature a bit
@@ -123,10 +157,11 @@ RUN echo "$USER ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 RUN chown $USER -R /usr/local/bin
 USER $USER
 WORKDIR /home/$USER
-COPY .bashrc .bashrc
+COPY .zshrc .zshrc
 RUN mkdir .ssh
 RUN echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDqv2GX5EijhgCIJ7f+0wHcVDCHAxLT7pYIWLxZ+3rLK alex.l.leung@gmail.com" >> .ssh/authorized_keys
+#RUN sh -uec "$(curl -fsSL https://raw.githubusercontent.com/romkatv/zsh4humans/v5/install)"
 
 # Start
 ENTRYPOINT ["/tmp/startup.sh"]
-CMD ["bash"]
+CMD ["sh"]
